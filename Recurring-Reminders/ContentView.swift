@@ -5,28 +5,34 @@
 //  Created by Evan Rinehart on 10/29/25.
 //
 
+// Group notes together or provide a tagging system. A task can have many tasks.
+// Store lots of information about the task. Pictures, links, notes? Anything.
+
 import SwiftUI
 import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Query private var reminders: [Reminder]
 
     var body: some View {
-        NavigationSplitView {
+        NavigationView {
             List {
-                ForEach(items) { item in
+                ForEach(reminders) { reminder in
                     NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
+                        // TODO: Define what information should show up here about a reminder (more detailed).
+                        Text("Need to add stuff here")
                     } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+                        // TODO: Define what information should show up here about a reminder (at a glance).
+                        // Probably good to display the name of the task and when it needs to be completed next.
+                        Text(reminder.title)
                     }
                 }
                 .onDelete(perform: deleteItems)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                    EditButton() // default SwiftUI behavior for List
                 }
                 ToolbarItem {
                     Button(action: addItem) {
@@ -34,14 +40,13 @@ struct ContentView: View {
                     }
                 }
             }
-        } detail: {
-            Text("Select an item")
         }
     }
 
     private func addItem() {
         withAnimation {
-            let newItem = Item(timestamp: Date())
+            // TODO: Create a view or something with input fields for new reminders. CURRENTLY HARCODED
+            let newItem = Reminder(title: "TEST")
             modelContext.insert(newItem)
         }
     }
@@ -49,7 +54,7 @@ struct ContentView: View {
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(items[index])
+                modelContext.delete(reminders[index])
             }
         }
     }
@@ -57,5 +62,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Reminder.self, inMemory: true)
 }
